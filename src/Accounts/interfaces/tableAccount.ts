@@ -1,4 +1,4 @@
-import type { Profile } from "./tableProfile"
+import type { Profile } from "../interfaces/tableProfile";
 
 export interface Account {
   id: number
