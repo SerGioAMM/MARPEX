@@ -4,7 +4,7 @@ import { supabase } from "../actions/supabaseClient";
 import type { Profile } from "../interfaces/tableProfile";
 import type { Platform } from "../interfaces/tablePlatform";
 import type { Status } from "../interfaces/tableStatus";
-import "../index.css";
+import "../style.css";
 
 // ─── Accounts Panel ──────────────────────────────────────────────────────────
 export function AccountsPanel({ platform, statuses, onBack }: { platform: Platform; statuses: Status[]; onBack: () => void }) {

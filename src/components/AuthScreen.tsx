@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { supabase } from "../actions/supabaseClient";
-import "../index.css";
+import "../style.css";
 
 
 export function AuthScreen() {
@@ -38,7 +38,7 @@ export function AuthScreen() {
   return (
     <div className="login-wrap">
       <div className="login-card">
-        <div className="login-logo">MARPEX</div>
+        <h1>MARPEX</h1>
         <div className="login-sub">Panel de Control</div>
         <div className="login-tabs">
           <button
@@ -80,7 +80,7 @@ export function AuthScreen() {
           }
         />
         <button
-          className="btn-primary"
+          className="btn-main"
           onClick={tab === "login" ? handleLogin : handleRegister}
           disabled={loading}
         >

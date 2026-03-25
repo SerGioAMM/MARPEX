@@ -1,0 +1,224 @@
+:root {
+  --bg-color: #0f172a;
+  --card-bg: #1e293b;
+  --primary: #00c6ff;
+  --success: #10b981;
+  --danger: #ef4444;
+  --text: #f1f5f9;
+}
+body {
+  font-family: "Segoe UI", sans-serif;
+  background: var(--bg-color);
+  color: var(--text);
+  margin: 0;
+  padding: 0;
+  font-size: 13px;
+}
+.hidden {
+  display: none !important;
+}
+
+/* LOGIN */
+#pantallaLogin {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle, #1e293b 0%, #0f172a 100%);
+}
+.login-card {
+  background: var(--card-bg);
+  padding: 30px;
+  border-radius: 15px;
+  width: 300px;
+  text-align: center;
+  border: 1px solid #334155;
+}
+.login-card h1 {
+  color: var(--primary);
+  margin-bottom: 20px;
+  font-size: 28px;
+  letter-spacing: 2px;
+}
+.login-card input {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 15px;
+  border-radius: 8px;
+  border: 1px solid #334155;
+  background: #0f172a;
+  color: white;
+  box-sizing: border-box;
+}
+
+/* APP */
+.container {
+  max-width: 950px;
+  margin: 0 auto;
+  padding: 15px;
+}
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #334155;
+  padding-bottom: 10px;
+}
+nav {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  justify-content: center;
+}
+button {
+  cursor: pointer;
+  border-radius: 6px;
+  border: none;
+  font-weight: 600;
+  font-size: 11px;
+  padding: 8px 12px;
+  transition: 0.2s;
+}
+.btn-nav {
+  background: #334155;
+  color: white;
+}
+.btn-nav.active {
+  background: var(--primary);
+  color: #000;
+}
+.btn-main {
+  background: var(--primary);
+  color: #000;
+}
+.btn-ws {
+  background: #25d366;
+  color: white;
+  padding: 6px 10px;
+  border-radius: 4px;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  font-weight: bold;
+}
+.btn-danger {
+  background: var(--danger);
+  color: white;
+}
+
+.search-bar {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  background: #0f172a;
+  border: 1px solid var(--primary);
+  border-radius: 8px;
+  color: var(--primary);
+  outline: none;
+  box-sizing: border-box;
+}
+
+.grid-servicios {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  gap: 12px;
+}
+.btn-servicio {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: var(--card-bg);
+  color: white;
+  padding: 15px;
+  border: 1px solid #334155;
+  position: relative;
+  width: 100%;
+  box-sizing: border-box;
+}
+.btn-servicio img {
+  width: 30px;
+  height: 30px;
+  margin-bottom: 5px;
+  pointer-events: none;
+}
+.badge-count {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background: var(--primary);
+  color: #000;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: bold;
+  border: 2px solid var(--bg-color);
+}
+
+.tabs-clientes {
+  display: flex;
+  gap: 5px;
+  margin-bottom: 15px;
+}
+.tab-btn {
+  flex: 1;
+  background: #334155;
+  color: white;
+  padding: 10px;
+  border-radius: 4px;
+}
+.tab-btn.active {
+  background: var(--primary);
+  color: #000;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 5px;
+}
+td,
+th {
+  padding: 10px;
+  border-bottom: 1px solid #334155;
+  text-align: left;
+}
+
+.cuenta-card {
+  background: var(--card-bg);
+  border-radius: 10px;
+  padding: 15px;
+  margin-bottom: 25px;
+  border: 1px solid #334155;
+  position: relative;
+}
+.num-cuenta {
+  position: absolute;
+  left: 10px;
+  top: -12px;
+  background: var(--primary);
+  color: #000;
+  padding: 2px 10px;
+  border-radius: 4px;
+  font-weight: bold;
+}
+.perfil-row {
+  display: grid;
+  grid-template-columns: 80px 1fr 90px 30px;
+  gap: 5px;
+  align-items: center;
+  background: #0f172a;
+  padding: 6px 10px;
+  border-radius: 4px;
+  margin-top: 5px;
+}
+.btn-mini-danger {
+  background: var(--danger);
+  color: white;
+  padding: 2px 8px;
+  border-radius: 3px;
+  font-size: 12px;
+}
