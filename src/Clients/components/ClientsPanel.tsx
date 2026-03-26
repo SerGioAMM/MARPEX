@@ -233,7 +233,7 @@ export function ClientsPanel({
                               Confirmar
                             </button>
                             <button
-                              className="btn-del-row"
+                              className="btn-cancel"
                               onClick={() => {
                                 setRenewingClientId(null);
                                 setRenewDate("");
