@@ -76,14 +76,12 @@ export const useAccountsPanel = ({
   async function addProfile(accountId: number) {
     const defaultStatus =
       statuses.find((s) => s.name === "disponible")?.id ?? statuses[0]?.id ?? 1;
-    await supabase
-      .from("profiles")
-      .insert({
-        account_id: accountId,
-        name: "Perfil",
-        status_id: defaultStatus,
-        client_id: null,
-      });
+    await supabase.from("profiles").insert({
+      account_id: accountId,
+      name: "Perfil",
+      status_id: defaultStatus,
+      client_name: null,
+    });
     loadAccounts();
   }
 
@@ -93,7 +91,7 @@ export const useAccountsPanel = ({
       .update({
         name: profile.name,
         status_id: profile.status_id,
-        client_id: profile.client_id,
+        client_name: profile.client_name,
       })
       .eq("id", profile.id);
   }

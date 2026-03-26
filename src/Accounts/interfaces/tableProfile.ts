@@ -3,5 +3,5 @@ export interface Profile {
   account_id: number
   name: string
   status_id: number
-  client_id: number | null
+  client_name: string | null
 }

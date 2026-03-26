@@ -1,3 +1,4 @@
+import { useState } from "react";
 import type { Platform } from "../../Main/interfaces/tablePlatform";
 import type { Status } from "../../Main/interfaces/tableStatus";
 import { useAccountsPanel } from "../hooks/useAccountsPanel";
@@ -35,6 +36,10 @@ export function AccountsPanel({
     filtered,
   } = useAccountsPanel({ platform, statuses });
 
+  const [clientNameDrafts, setClientNameDrafts] = useState<
+    Record<number, string>
+  >({});
+
   return (
     <>
       <button className="back-btn" onClick={onBack}>
@@ -53,7 +58,11 @@ export function AccountsPanel({
           value={newPass}
           onChange={(e) => setNewPass(e.target.value)}
         />
-        <button className="btn-main" style={{ width:'100%', height:'40px', fontSize:'15px' }} onClick={addAccount}>
+        <button
+          className="btn-main"
+          style={{ width: "100%", height: "40px", fontSize: "15px" }}
+          onClick={addAccount}
+        >
           Guardar Cuenta
         </button>
       </div>
@@ -119,95 +128,131 @@ export function AccountsPanel({
               placeholder="Contraseña"
             />
             <div className="profiles-section">
-              {(acc.profiles ?? []).map((prof) => (
-                <div key={prof.id} className="profile-row">
-                  <input
-                    className="profile-input"
-                    value={prof.name}
-                    placeholder="Nombre"
-                    onChange={(e) => {
-                      const updated = { ...prof, name: e.target.value };
-                      setAccounts((prev) =>
-                        prev.map((a) =>
-                          a.id === acc.id
-                            ? {
-                                ...a,
-                                profiles: a.profiles?.map((p) =>
-                                  p.id === prof.id ? updated : p,
-                                ),
-                              }
-                            : a,
-                        ),
-                      );
-                    }}
-                    onBlur={() => updateProfile(prof)}
-                  />
-                  <input
-                    className="profile-input"
-                    value={prof.client_id?.toString() ?? ""}
-                    placeholder="ID Cliente"
-                    onChange={(e) => {
-                      const updated = {
-                        ...prof,
-                        client_id: e.target.value
-                          ? parseInt(e.target.value)
-                          : null,
-                      };
-                      setAccounts((prev) =>
-                        prev.map((a) =>
-                          a.id === acc.id
-                            ? {
-                                ...a,
-                                profiles: a.profiles?.map((p) =>
-                                  p.id === prof.id ? updated : p,
-                                ),
-                              }
-                            : a,
-                        ),
-                      );
-                    }}
-                    onBlur={() => updateProfile(prof)}
-                  />
-                  <select
-                    className="profile-select"
-                    value={prof.status_id}
-                    onChange={async (e) => {
-                      const updated = {
-                        ...prof,
-                        status_id: parseInt(e.target.value),
-                      };
-                      setAccounts((prev) =>
-                        prev.map((a) =>
-                          a.id === acc.id
-                            ? {
-                                ...a,
-                                profiles: a.profiles?.map((p) =>
-                                  p.id === prof.id ? updated : p,
-                                ),
-                              }
-                            : a,
-                        ),
-                      );
-                      await supabase
-                        .from("profiles")
-                        .update({ status_id: updated.status_id })
-                        .eq("id", prof.id);
-                    }}
-                  >
-                    {statuses.map((s) => (
-                      <option key={s.id} value={s.id}>
-                        {s.name}
-                      </option>
-                    ))}
-                  </select>
-                  <button
-                    className="btn-del-sm"
-                    onClick={() => deleteProfile(prof.id)}
-                  >
-                    ✕
-                  </button>
-                </div>
-              ))}
+              <div className="profile-row profile-header">
+                <div>Perfil</div>
+                <div>Cliente</div>
+                <div>Estado</div>
+                <div></div>
+              </div>
+              {(acc.profiles ?? []).map((prof) => {
+                const statusName =
+                  statuses
+                    .find((s) => s.id === prof.status_id)
+                    ?.name?.toLowerCase() ?? "";
+                const rowClassName = `profile-row profile-status-${statusName}`;
+                const currentClientName =
+                  clientNameDrafts[prof.id] ?? prof.client_name ?? "";
+                return (
+                  <div key={prof.id} className={rowClassName}>
+                    <input
+                      className="profile-input"
+                      value={prof.name}
+                      placeholder="Nombre"
+                      onChange={(e) => {
+                        const updated = { ...prof, name: e.target.value };
+                        setAccounts((prev) =>
+                          prev.map((a) =>
+                            a.id === acc.id
+                              ? {
+                                  ...a,
+                                  profiles: a.profiles?.map((p) =>
+                                    p.id === prof.id ? updated : p,
+                                  ),
+                                }
+                              : a,
+                          ),
+                        );
+                      }}
+                      onBlur={() => updateProfile(prof)}
+                    />
+                    <input
+                      className="profile-input"
+                      value={currentClientName}
+                      placeholder="Cliente"
+                      onChange={(e) => {
+                        const nameValue = e.target.value;
+                        setClientNameDrafts((prev) => ({
+                          ...prev,
+                          [prof.id]: nameValue,
+                        }));
+                        const updated = { ...prof, client_name: nameValue };
+                        setAccounts((prev) =>
+                          prev.map((a) =>
+                            a.id === acc.id
+                              ? {
+                                  ...a,
+                                  profiles: a.profiles?.map((p) =>
+                                    p.id === prof.id ? updated : p,
+                                  ),
+                                }
+                              : a,
+                          ),
+                        );
+                      }}
+                      onBlur={() => {
+                        const nameValue =
+                          clientNameDrafts[prof.id] ?? prof.client_name ?? "";
+                        const updated = { ...prof, client_name: nameValue };
+                        setAccounts((prev) =>
+                          prev.map((a) =>
+                            a.id === acc.id
+                              ? {
+                                  ...a,
+                                  profiles: a.profiles?.map((p) =>
+                                    p.id === prof.id ? updated : p,
+                                  ),
+                                }
+                              : a,
+                          ),
+                        );
+                        setClientNameDrafts((prev) => ({
+                          ...prev,
+                          [prof.id]: nameValue,
+                        }));
+                        updateProfile(updated);
+                      }}
+                    />
+                    <select
+                      className="profile-select"
+                      value={prof.status_id}
+                      onChange={async (e) => {
+                        const updated = {
+                          ...prof,
+                          status_id: parseInt(e.target.value),
+                        };
+                        setAccounts((prev) =>
+                          prev.map((a) =>
+                            a.id === acc.id
+                              ? {
+                                  ...a,
+                                  profiles: a.profiles?.map((p) =>
+                                    p.id === prof.id ? updated : p,
+                                  ),
+                                }
+                              : a,
+                          ),
+                        );
+                        await supabase
+                          .from("profiles")
+                          .update({ status_id: updated.status_id })
+                          .eq("id", prof.id);
+                      }}
+                    >
+                      {statuses.map((s) => (
+                        <option key={s.id} value={s.id}>
+                          {s.name}
+                        </option>
+                      ))}
+                    </select>
+                    <button
+                      className="btn-del-sm"
+                      onClick={() => deleteProfile(prof.id)}
+                    >
+                      ✕
+                    </button>
+                  </div>
+                );
+              })}
             </div>
             <button
               className="btn-add-profile"

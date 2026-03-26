@@ -1,7 +1,9 @@
+import { useState } from "react";
 import type { Platform } from "../../Main/interfaces/tablePlatform";
 import { daysRemaining } from "../../Main/helpers/daysRemaining";
 import { useClientsPanel } from "../hooks/useClientsPanel";
 import "../../index.css";
+import "../../style.css";
 
 export function ClientsPanel({
   platform,
@@ -32,6 +34,9 @@ export function ClientsPanel({
     deleteClient,
     renewClient,
   } = useClientsPanel({ platform });
+
+  const [renewingClientId, setRenewingClientId] = useState<number | null>(null);
+  const [renewDate, setRenewDate] = useState("");
   return (
     <>
       <button className="back-btn" onClick={onBack}>
@@ -78,7 +83,11 @@ export function ClientsPanel({
             onChange={(e) => setNewDate(e.target.value)}
             style={{ colorScheme: "dark" }}
           />
-          <button className="btn-main" style={{ width:'100%', height:'40px', fontSize:'15px' }} onClick={addClient}>
+          <button
+            className="btn-main"
+            style={{ width: "100%", height: "40px", fontSize: "15px" }}
+            onClick={addClient}
+          >
             Registrar Cliente
           </button>
         </div>
@@ -112,20 +121,31 @@ export function ClientsPanel({
                     style={{
                       color: "var(--muted)",
                       fontFamily: "var(--mono)",
-                      fontSize: 11,
+                      fontSize: 14,
                     }}
                   >
                     {i + 1}
                   </td>
-                  <td>{c.full_name}</td>
+                  <td
+                    style={{
+                      fontSize: 16,
+                    }}
+                  >
+                    {c.full_name}
+                  </td>
                   <td>
-                    <span className="pill-success">
+                    <span
+                      className="pill-success"
+                      style={{
+                        fontSize: 14,
+                      }}
+                    >
                       {daysRemaining(c.start_date)}d
                     </span>
                   </td>
                   <td>
                     <button
-                      className="btn-del-row"
+                      className="btn-cancel"
                       onClick={() => deleteClient(c.id)}
                     >
                       ✕
@@ -155,7 +175,7 @@ export function ClientsPanel({
               <tr>
                 <th>#</th>
                 <th>Nombre</th>
-                <th>Mora</th>
+                <th>Dias vencido</th>
                 <th>Acciones</th>
               </tr>
             </thead>
@@ -191,12 +211,45 @@ export function ClientsPanel({
                             WS
                           </a>
                         )}
-                        <button
-                          className="btn-renew"
-                          onClick={() => renewClient(c.id)}
-                        >
-                          Renovar
-                        </button>
+                        {renewingClientId === c.id ? (
+                          <>
+                            <input
+                              type="date"
+                              value={renewDate}
+                              onChange={(e) => setRenewDate(e.target.value)}
+                              style={{ marginRight: "5px", padding: "4px" }}
+                            />
+                            <button
+                              className="btn-renew"
+                              onClick={() => {
+                                if (renewDate) {
+                                  renewClient(c.id, renewDate);
+                                  setRenewingClientId(null);
+                                  setRenewDate("");
+                                }
+                              }}
+                              disabled={!renewDate}
+                            >
+                              Confirmar
+                            </button>
+                            <button
+                              className="btn-del-row"
+                              onClick={() => {
+                                setRenewingClientId(null);
+                                setRenewDate("");
+                              }}
+                            >
+                              Cancelar
+                            </button>
+                          </>
+                        ) : (
+                          <button
+                            className="btn-renew"
+                            onClick={() => setRenewingClientId(c.id)}
+                          >
+                            Renovar
+                          </button>
+                        )}
                         <button
                           className="btn-del-row"
                           onClick={() => deleteClient(c.id)}

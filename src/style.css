@@ -134,6 +134,20 @@ button {
   color: white;
 }
 
+.search-bar,
+.search-input,
+.add-form input,
+.add-form button,
+.client-tabs button,
+table,
+th,
+td,
+.account-card,
+.profile-row,
+.account-field {
+  font-size: 15px;
+}
+
 .search-bar {
   width: 100%;
   padding: 10px;
@@ -232,15 +246,35 @@ th {
   border-radius: 4px;
   font-weight: bold;
 }
-.perfil-row {
+.perfil-row,
+.profile-row {
   display: grid;
-  grid-template-columns: 80px 1fr 90px 30px;
+  grid-template-columns: 0.6fr 1fr 0.5fr 30px;
   gap: 5px;
   align-items: center;
-  background: #0f172a;
   padding: 6px 10px;
   border-radius: 4px;
   margin-top: 5px;
+  font-size: 15px;
+}
+.profile-row.profile-header {
+  font-weight: 700;
+  color: #a5b4fc;
+  background: #0f172a;
+  border: 1px solid #334155;
+  margin-bottom: 8px;
+  padding-left: 4%;
+}
+.profile-input,
+.profile-select {
+  border: 1px solid #334155;
+  border-radius: 6px;
+  padding: 7px 10px;
+  background: #0f172a6c;
+  color: white;
+  width: 100%;
+  box-sizing: border-box;
+  font-size: 16px;
 }
 .btn-mini-danger {
   background: var(--danger);

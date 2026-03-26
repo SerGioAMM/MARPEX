@@ -52,9 +52,11 @@ export const useClientsPanel = ({ platform }: { platform: Platform }) => {
     loadClients();
   }
 
-  async function renewClient(id: number) {
-    const today = new Date().toISOString().split("T")[0];
-    await supabase.from("clients").update({ start_date: today }).eq("id", id);
+  async function renewClient(id: number, startDate: string) {
+    await supabase
+      .from("clients")
+      .update({ start_date: startDate })
+      .eq("id", id);
     loadClients();
   }
 
