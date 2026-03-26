@@ -10,7 +10,7 @@ export const useUsersPanel = () => {
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
 
-   const loadUsers = useCallback(async () => {
+  const loadUsers = useCallback(async () => {
     const { data, error: fetchError } = await supabase
       .from("users")
       .select("id, email, created_at")
@@ -48,22 +48,25 @@ export const useUsersPanel = () => {
     setMessage("");
 
     try {
-      const { data: authData, error: signupError } = await supabase.auth.signUp({
+      // 1. Guardar la sesión del admin actual
+      const {
+        data: { session: adminSession },
+      } = await supabase.auth.getSession();
+
+      // 2. Crear el nuevo usuario (esto hace auto-login en Supabase)
+      const { error: signupError } = await supabase.auth.signUp({
         email: `${username.trim().toLowerCase()}`,
         password,
       });
 
       if (signupError) throw signupError;
 
-      if (authData.user) {
-        const { error: insertError } = await supabase
-          .from("user_profiles")
-          .insert({
-            id: authData.user.id,
-            username: username.trim().toLowerCase(),
-          });
-
-        if (insertError) throw insertError;
+      // 3. Restaurar la sesión del admin inmediatamente
+      if (adminSession) {
+        await supabase.auth.setSession({
+          access_token: adminSession.access_token,
+          refresh_token: adminSession.refresh_token,
+        });
       }
 
       setMessage("Usuario creado correctamente");
@@ -75,13 +78,12 @@ export const useUsersPanel = () => {
       setLoading(false);
     }
   };
-
   const handleDelete = async (id: string) => {
     if (!window.confirm("¿Eliminar este usuario?")) return;
 
     setLoading(true);
     const { error: deleteError } = await supabase
-      .from("user_profiles")
+      .from("users")
       .delete()
       .eq("id", id);
 

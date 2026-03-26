@@ -78,7 +78,7 @@ export function ClientsPanel({
             onChange={(e) => setNewDate(e.target.value)}
             style={{ colorScheme: "dark" }}
           />
-          <button className="btn-primary" onClick={addClient}>
+          <button className="btn-main" style={{ width:'100%', height:'40px', fontSize:'15px' }} onClick={addClient}>
             Registrar Cliente
           </button>
         </div>

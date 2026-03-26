@@ -168,6 +168,10 @@ body {
   font-size: 11px;
   color: var(--muted);
 }
+.username {
+  font-family: var(--mono);
+  font-size: 1rem;
+}
 .btn-logout {
   background: none;
   border: 1px solid var(--border);
@@ -275,9 +279,8 @@ body {
   gap: 6px;
 }
 .section-title {
-  font-size: 20px;
-  font-weight: 800;
-  letter-spacing: 2px;
+  font-size: 35px;
+  font-weight: 700;
   margin-bottom: 20px;
   text-align: center;
 }

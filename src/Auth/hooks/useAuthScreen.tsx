@@ -16,7 +16,7 @@ export const useAuthScreen = () => {
       email,
       password,
     });
-    if (err) setError(err.message);
+    if (err) setError(`Parece que ocurrio un error con el login, vuelve a intentarlo (ERROR ${err.message})`);
     setLoading(false);
   }
 

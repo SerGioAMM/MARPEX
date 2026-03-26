@@ -2,6 +2,7 @@ import type { Platform } from "../../Main/interfaces/tablePlatform";
 import type { Status } from "../../Main/interfaces/tableStatus";
 import { useAccountsPanel } from "../hooks/useAccountsPanel";
 import { supabase } from "../../Main/actions/supabaseClient";
+import "../../index.css";
 import "../../style.css";
 
 // ─── Accounts Panel ──────────────────────────────────────────────────────────
@@ -52,7 +53,7 @@ export function AccountsPanel({
           value={newPass}
           onChange={(e) => setNewPass(e.target.value)}
         />
-        <button className="btn-primary" onClick={addAccount}>
+        <button className="btn-main" style={{ width:'100%', height:'40px', fontSize:'15px' }} onClick={addAccount}>
           Guardar Cuenta
         </button>
       </div>

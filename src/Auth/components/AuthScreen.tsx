@@ -18,12 +18,7 @@ export function AuthScreen() {
       <div className="login-card">
         <h1>MARPEX</h1>
         <div className="login-sub">Panel de Control</div>
-        <div
-          style={{ marginBottom: "8px", color: "#9ca3af", fontSize: "12px" }}
-        >
-          Registro restringido: solo administrador puede crear nuevos usuarios
-          desde el panel.
-        </div>
+        
         {error && <div className="err-msg">{error}</div>}
         <input
           className="field"
