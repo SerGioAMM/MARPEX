@@ -9,19 +9,80 @@ export function ResetPasswordScreen() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [sessionError, setSessionError] = useState(false);
 
   useEffect(() => {
-    // Verificar que estamos en el flujo correcto de reset
-    const hashParams = new URLSearchParams(window.location.hash.substring(1));
-    const accessToken = hashParams.get("access_token");
-    const refreshToken = hashParams.get("refresh_token");
+    const parseParams = () => {
+      const hashParams = new URLSearchParams(window.location.hash.substring(1));
+      const queryParams = new URLSearchParams(window.location.search);
+      return {
+        access_token:
+          hashParams.get("access_token") || queryParams.get("access_token"),
+        refresh_token:
+          hashParams.get("refresh_token") || queryParams.get("refresh_token"),
+        type: hashParams.get("type") || queryParams.get("type"),
+        rawHash: window.location.hash,
+        rawSearch: window.location.search,
+      };
+    };
 
-    if (accessToken && refreshToken) {
-      supabase.auth.setSession({
-        access_token: accessToken,
-        refresh_token: refreshToken,
-      });
+    const {
+      access_token: accessToken,
+      refresh_token: refreshToken,
+      type,
+      rawHash,
+      rawSearch,
+    } = parseParams();
+
+    console.log("ResetPasswordScreen params:", {
+      accessToken,
+      refreshToken,
+      type,
+      rawHash,
+      rawSearch,
+    });
+
+    if (!accessToken) {
+      setSessionError(true);
+      setError(
+        "No se encontró token de recuperación. Verifica que la URL tenga access_token.",
+      );
+      return;
     }
+
+    if (!refreshToken) {
+      setSessionError(true);
+      setError("No se encontró refresh_token. El enlace es inválido.");
+      return;
+    }
+
+    if (type && type !== "recovery") {
+      setSessionError(true);
+      setError("El link no es de tipo recovery válida. Pide un nuevo enlace.");
+      return;
+    }
+
+    (async () => {
+      const { data, error: sessionErrorResponse } =
+        await supabase.auth.setSession({
+          access_token: accessToken,
+          refresh_token: refreshToken,
+        });
+
+      if (sessionErrorResponse) {
+        console.error("Error setSession", sessionErrorResponse);
+        setSessionError(true);
+        setError(
+          "No pudimos validar este enlace de recuperación (session error). Vuelve a intentarlo.",
+        );
+        return;
+      }
+
+      if (!data.session) {
+        setSessionError(true);
+        setError("No se pudo iniciar sesión con el token proporcionado.");
+      }
+    })();
   }, []);
 
   async function handleResetPassword() {
@@ -50,6 +111,8 @@ export function ResetPasswordScreen() {
     } else {
       setSuccess(true);
       setTimeout(() => {
+        // Limpia la sesión de recovery y redirige al login
+        supabase.auth.signOut();
         window.location.href = "/";
       }, 2000);
     }
@@ -71,7 +134,7 @@ export function ResetPasswordScreen() {
               fontSize: "16px",
             }}
           >
-            Contraseña actualizada exitosamente
+            ✅ Contraseña actualizada exitosamente
           </div>
           <div
             style={{
@@ -82,6 +145,28 @@ export function ResetPasswordScreen() {
           >
             Redirigiendo al login...
           </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (sessionError) {
+    return (
+      <div className="login-wrap">
+        <div className="login-card">
+          <h1>MARPEX</h1>
+          <div className="login-sub">Restablecer Contraseña</div>
+          <div className="err-msg">
+            ❌ El enlace de recuperación ha expirado o es inválido. Solicita uno
+            nuevo.
+          </div>
+          <button
+            className="btn-main"
+            onClick={() => (window.location.href = "/")}
+            style={{ marginTop: "20px" }}
+          >
+            Volver al login
+          </button>
         </div>
       </div>
     );

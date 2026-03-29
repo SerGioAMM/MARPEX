@@ -51,7 +51,7 @@ export const useMainApp = ({ user }: { user: User }) => {
   }, [loadPlatforms, loadStatuses, loadCounts]);
 
   const isAdmin =
-    user.email === "omarlopez" || user.email === "sergio.zabbix01@gmail.com";
+    user.email === "marpexapp@gmail.com" || user.email === "sergio.zabbix01@gmail.com";
 
   function goBack() {
     setActivePlatform(null);

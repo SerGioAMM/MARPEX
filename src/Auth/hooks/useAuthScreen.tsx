@@ -16,7 +16,10 @@ export const useAuthScreen = () => {
       email,
       password,
     });
-    if (err) setError(`Parece que ocurrio un error con el login, vuelve a intentarlo (ERROR ${err.message})`);
+    if (err)
+      setError(
+        `Parece que ocurrio un error con el login, vuelve a intentarlo (ERROR ${err.message})`,
+      );
     setLoading(false);
   }
 
@@ -28,18 +31,26 @@ export const useAuthScreen = () => {
     setRecovering(true);
     setError("");
 
+    const resetUrl = `${window.location.origin}/reset-password`;
+
     const { error: err } = await supabase.auth.resetPasswordForEmail(
       `${email.trim().toLowerCase()}`,
       {
         // URL a la que Supabase redirigirá después de que el usuario
-        // haga clic en el link del correo. Debes configurar esta URL
+        // haga clic en el link del correo. Debes configurar estas URLs
         // en Supabase → Authentication → URL Configuration → Redirect URLs
-        redirectTo: `${window.location.origin}/reset-password`,
+        // Ejemplo:
+        // - Desarrollo: http://localhost:5173/reset-password
+        // - Producción: https://tu-dominio.com/reset-password
+        redirectTo: resetUrl,
       },
     );
 
     if (err) setError(err.message);
-    else postMessage("Correo de recuperación enviado. Revisa tu bandeja.");
+    else {
+      setError(""); // Limpiar antes de mostrar mensaje
+      alert("✅ Correo de recuperación enviado. Revisa tu bandeja de entrada.");
+    }
 
     setRecovering(false);
   }
