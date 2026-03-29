@@ -9,110 +9,45 @@ export function ResetPasswordScreen() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
-  const [sessionError, setSessionError] = useState(false);
+  const [sessionReady, setSessionReady] = useState(false);
 
   useEffect(() => {
-    const parseParams = () => {
-      const hashParams = new URLSearchParams(window.location.hash.substring(1));
-      const queryParams = new URLSearchParams(window.location.search);
-      return {
-        access_token:
-          hashParams.get("access_token") || queryParams.get("access_token"),
-        refresh_token:
-          hashParams.get("refresh_token") || queryParams.get("refresh_token"),
-        type: hashParams.get("type") || queryParams.get("type"),
-        rawHash: window.location.hash,
-        rawSearch: window.location.search,
-      };
-    };
-
-    const {
-      access_token: accessToken,
-      refresh_token: refreshToken,
-      type,
-      rawHash,
-      rawSearch,
-    } = parseParams();
-
-    console.log("ResetPasswordScreen params:", {
-      accessToken,
-      refreshToken,
-      type,
-      rawHash,
-      rawSearch,
+    // 1. Revisar si ya hay una sesión activa (caso: Supabase procesó el code antes del mount)
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) {
+        setSessionReady(true);
+      }
     });
 
-    if (!accessToken) {
-      setSessionError(true);
-      setError(
-        "No se encontró token de recuperación. Verifica que la URL tenga access_token.",
-      );
-      return;
-    }
-
-    if (!refreshToken) {
-      setSessionError(true);
-      setError("No se encontró refresh_token. El enlace es inválido.");
-      return;
-    }
-
-    if (type && type !== "recovery") {
-      setSessionError(true);
-      setError("El link no es de tipo recovery válida. Pide un nuevo enlace.");
-      return;
-    }
-
-    (async () => {
-      const { data, error: sessionErrorResponse } =
-        await supabase.auth.setSession({
-          access_token: accessToken,
-          refresh_token: refreshToken,
-        });
-
-      if (sessionErrorResponse) {
-        console.error("Error setSession", sessionErrorResponse);
-        setSessionError(true);
-        setError(
-          "No pudimos validar este enlace de recuperación (session error). Vuelve a intentarlo.",
-        );
-        return;
+    // 2. Escuchar por si llega después
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      if ((event === "PASSWORD_RECOVERY" || event === "SIGNED_IN") && session) {
+        setSessionReady(true);
       }
+    });
 
-      if (!data.session) {
-        setSessionError(true);
-        setError("No se pudo iniciar sesión con el token proporcionado.");
-      }
-    })();
+    return () => subscription.unsubscribe();
   }, []);
 
   async function handleResetPassword() {
-    if (!password) {
-      setError("Ingresa una nueva contraseña");
-      return;
-    }
-    if (password.length < 6) {
-      setError("La contraseña debe tener al menos 6 caracteres");
-      return;
-    }
-    if (password !== confirmPassword) {
-      setError("Las contraseñas no coinciden");
-      return;
-    }
+    if (!password) return setError("Ingresa una nueva contraseña");
+    if (password.length < 6) return setError("Mínimo 6 caracteres");
+    if (password !== confirmPassword)
+      return setError("Las contraseñas no coinciden");
 
     setLoading(true);
     setError("");
 
-    const { error: err } = await supabase.auth.updateUser({
-      password: password,
-    });
+    const { error: err } = await supabase.auth.updateUser({ password });
 
     if (err) {
-      setError(`Error al actualizar contraseña: ${err.message}`);
+      setError(`Error: ${err.message}`);
     } else {
       setSuccess(true);
-      setTimeout(() => {
-        // Limpia la sesión de recovery y redirige al login
-        supabase.auth.signOut();
+      setTimeout(async () => {
+        await supabase.auth.signOut();
         window.location.href = "/";
       }, 2000);
     }
@@ -131,7 +66,6 @@ export function ResetPasswordScreen() {
               color: "var(--success)",
               textAlign: "center",
               margin: "20px 0",
-              fontSize: "16px",
             }}
           >
             ✅ Contraseña actualizada exitosamente
@@ -150,23 +84,21 @@ export function ResetPasswordScreen() {
     );
   }
 
-  if (sessionError) {
+  if (!sessionReady) {
     return (
       <div className="login-wrap">
         <div className="login-card">
           <h1>MARPEX</h1>
           <div className="login-sub">Restablecer Contraseña</div>
-          <div className="err-msg">
-            ❌ El enlace de recuperación ha expirado o es inválido. Solicita uno
-            nuevo.
-          </div>
-          <button
-            className="btn-main"
-            onClick={() => (window.location.href = "/")}
-            style={{ marginTop: "20px" }}
+          <div
+            style={{
+              textAlign: "center",
+              color: "var(--muted)",
+              margin: "20px 0",
+            }}
           >
-            Volver al login
-          </button>
+            Verificando enlace...
+          </div>
         </div>
       </div>
     );
@@ -190,7 +122,7 @@ export function ResetPasswordScreen() {
         <input
           className="field"
           type="password"
-          placeholder="Confirmar nueva contraseña"
+          placeholder="Confirmar contraseña"
           value={confirmPassword}
           onChange={(e) => setConfirmPassword(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && handleResetPassword()}
