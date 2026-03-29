@@ -20,14 +20,13 @@ export function UsersPanel({ onBack }: UsersPanelProps) {
 
   return (
     <>
-        <div className="panel-header">
-          <button className="back-btn" onClick={onBack}>
-            ← Volver
-          </button>
-          <div className="section-title">Usuarios</div>
-        </div>
+      <div className="panel-header">
+        <button className="back-btn" onClick={onBack}>
+          ← Volver
+        </button>
+        <div className="section-title">Usuarios</div>
+      </div>
       <div className="users-panel">
-
         <div className="form-row">
           <input
             type="email"
@@ -63,13 +62,15 @@ export function UsersPanel({ onBack }: UsersPanelProps) {
               <tr key={user.id}>
                 <td className="username">{user.email}</td>
                 <td>
-                  <button
-                    className="btn-danger"
-                    onClick={() => handleDelete(user.id)}
-                    disabled={loading}
-                  >
-                    Eliminar
-                  </button>
+                  {user.email !== "marpexapp@gmail.com" && (
+                    <button
+                      className="btn-danger"
+                      onClick={() => handleDelete(user.id)}
+                      disabled={loading}
+                    >
+                      Eliminar
+                    </button>
+                  )}
                 </td>
               </tr>
             ))}
@@ -82,7 +83,6 @@ export function UsersPanel({ onBack }: UsersPanelProps) {
             )}
           </tbody>
         </table>
-
       </div>
     </>
   );
