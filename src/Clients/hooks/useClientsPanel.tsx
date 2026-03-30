@@ -33,7 +33,7 @@ export const useClientsPanel = ({ platform }: { platform: Platform }) => {
   async function addClient() {
     if (!newName || !newDate) return alert("Nombre y fecha son obligatorios");
     const { error } = await supabase.from("clients").insert({
-      full_name: newName,
+      full_name: newName.trim(),
       phone_number: newPhone,
       platform_id: platform.id,
       start_date: newDate,

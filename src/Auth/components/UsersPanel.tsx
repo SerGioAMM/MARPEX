@@ -77,7 +77,7 @@ export function UsersPanel({ onBack }: UsersPanelProps) {
             {users.length === 0 && (
               <tr>
                 <td colSpan={3}>
-                  No hay usuarios registrados en la tabla 'users'.
+                  No hay usuarios registrados.
                 </td>
               </tr>
             )}
